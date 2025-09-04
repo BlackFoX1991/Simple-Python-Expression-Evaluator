@@ -1,5 +1,5 @@
 from Tokenizer import TokenContainer, Ttypes
-
+import math
 
 class Position:
     __TPos = 0
@@ -57,6 +57,24 @@ def Expr():
     if token.ttype == Ttypes.TNUM:
         Position.Move()
         return float(token.tvalue)
+    
+    elif token.ttype == Ttypes.T_IDENT:
+        command = token.tvalue
+        Position.Move()
+        lvalue = Term()
+        match(command):
+            case "sin":
+                lvalue = math.sin(lvalue)
+            case "cos":
+                lvalue = math.cos(lvalue)
+            case "exp":
+                lvalue = math.exp(lvalue)
+            case "ceil":
+                lvalue = math.ceil(lvalue)
+            case _:
+                ThrowInterError("Error: Function not defined '" + command + "'.")
+        
+        return lvalue
 
     # Parentheses
     elif token.ttype == Ttypes.T_LPAREN:
@@ -69,7 +87,7 @@ def Expr():
             ThrowInterError("Error: Expected parenthesis close")
         return lvalue
 
-    ThrowInterError("Error: Unexpected token")
+    ThrowInterError("Error: Unexpected token ")
     return 0
 
 

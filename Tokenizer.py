@@ -17,6 +17,9 @@ class Ttypes(Enum):
     T_LPAREN = 7
     T_RPAREN = 8
 
+    # Other
+    T_IDENT = 9
+
 
 class Tokens:
     def __init__(self, TokenValue, TokenType, line=1, linepos=1):
@@ -57,6 +60,13 @@ def GetNumber(code, pos):
         pos += 1
     return tempNum, pos
 
+def GetIdent(code, pos):
+    tempIdent = ""
+    while pos < len(code) and (code[pos].isalpha() or code[pos] == "_"):
+        tempIdent += code[pos]
+        pos += 1
+    return tempIdent, pos
+
 
 def tokenize(code: str) -> TokenContainer:
     tokens = TokenContainer()
@@ -82,6 +92,11 @@ def tokenize(code: str) -> TokenContainer:
             number, pos = GetNumber(code, pos)
             tokens.AddToken(Ttypes.TNUM, number, line, linepos)
             linepos += len(number)
+            continue
+        elif ch.isalpha() or ch == "_":
+            ident, pos = GetIdent(code, pos)
+            tokens.AddToken(Ttypes.T_IDENT, ident, line, linepos)
+            linepos += len(ident)
             continue
 
         # Operators & parentheses
